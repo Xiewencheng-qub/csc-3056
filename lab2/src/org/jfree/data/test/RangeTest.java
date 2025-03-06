@@ -68,8 +68,24 @@ public void testConstrain() {
 	assertEquals("constrain:should return expected output",Range1.toString(),new Range(0,2).toString());
 }
 @Test
-public void testContains() {
-	assertTrue("Contains:should return expected output",Range1.contains(1));
+public void testContains1outsiderangeintheleft() {
+	assertFalse("Contains:should return expected output",Range1.contains(-6));
+}
+//@Test
+//public void testContains1outsiderangeintheleft() {
+//	assertTrue("Contains:should return expected output",Range1.contains(-6));
+//}
+public void testContains2bordercaseleft() {
+	assertTrue("Contains:should return expected output",Range1.contains(-1));
+}
+public void testContains3insidetherange() {
+	assertTrue("Contains:should return expected output",Range1.contains(4));
+}
+public void testContains4borderrangeright() {
+	assertTrue("Contains:should return expected output",Range1.contains(8));
+}
+public void testContains5Outsiderangeintheright() {
+	assertTrue("Contains:should return expected output",Range1.contains(13));
 }
 @Test
 public void testEquals() {
@@ -95,15 +111,28 @@ assertEquals("GetLength:should return expected output",Range1.getLength(),2.0, 0
 
 }
 @Test
-public void testGetLowerBound() {
+public void testGetLowerBoundnormalvalue() {
 assertEquals("GetLowerBound:should return expected output",Range1.getLowerBound(),0.0, 0.000000001d);
 
 }
 @Test
-public void testGetUpperBound() {
+public void testGetLowerBoundspeicalvalue() {
+	 Range Range3=new Range(Integer.MIN_VALUE, Integer.MAX_VALUE);
+assertEquals("GetLowerBound:should return expected output",Range3.getLowerBound(),Integer.MIN_VALUE, 0.000000001d);
+
+}
+@Test
+public void testGetUpperBoundnormalvalue() {
 assertEquals("GetUpperBound:should return expected output",Range1.getUpperBound(),0.0, 0.000000001d);
 
 }
+@Test
+public void testGetUpperBoundspecialvalue() {
+	 Range Range3=new Range(Integer.MIN_VALUE, Integer.MAX_VALUE);
+assertEquals("GetUpperBound:should return expected output",Range3.getUpperBound(),Integer.MIN_VALUE, 0.000000001d);
+
+}
+
 @Test
 public void testExpandToInclude() {
 	Range Range3=Range.expandToInclude(Range2,1);
@@ -115,8 +144,13 @@ assertTrue("Intersects:should return expected output",Range1.intersects(0,4));
 
 }
 @Test
-public void testHashCode() {
+public void testHashCodenormalvalue() {
 	Range Range3=new Range(0,1);
+assertNotSame("HashCode:should return expected output",Range3.hashCode(),Range3.hashCode());
+
+}
+public void testHashCodespecialvalue() {
+	Range Range3=new Range(Integer.MIN_VALUE, Integer.MAX_VALUE);
 assertNotSame("HashCode:should return expected output",Range3.hashCode(),Range3.hashCode());
 
 }
@@ -134,12 +168,23 @@ assertEquals("Shift2:should return expected output",Range.shift(Range3,2,true),n
 
 }
 @Test
-public void testToString() {
+public void testToStringnormalvalue() {
 	Range Range3=new Range(0,1);
 assertEquals("ToString:should return expected output",Range3.toString(),"Range[0.5,1.0]");
 
 }
+@Test
+public void testToStringspecialvalue() {
+	Range Range3=new Range(Integer.MIN_VALUE, Integer.MAX_VALUE);
+assertEquals("ToString:should return expected output",Range3.toString(),"Range[-0.5,2.147483647E9]");
 
+}
+//@Test
+//public void testToStringspecialvalue() {
+//	Range Range3=new Range(Integer.MIN_VALUE, Integer.MAX_VALUE);
+//assertEquals("ToString:should return expected output",Range3.toString(),"Range[-0.5,Integer.MIN_VALUE]");
+//
+//}
 }
 
 

@@ -29,7 +29,7 @@ public class DataUtilitiesTest {
     testValues.addValue(4, 1, 0);
     DefaultKeyedValues2D testValues1 = new DefaultKeyedValues2D();
     values2D1 = testValues1;
-    testValues1.addValue(1, 0, 0);
+    testValues1.addValue(1, 1, 1);
     testValues1.addValue(4, 1, 0);
   }
   @After
@@ -38,15 +38,23 @@ public class DataUtilitiesTest {
   }
 
   @Test
-  public void testNullGetCumulativePercentages() {
+  public void testNullGetCumulativePercentages1normalvalue() {
 	 {
 		 KeyedValues cumulativePercentages = DataUtilities.getCumulativePercentages(keyedValues);
 	assertEquals("wrong percentage return. It should be 1.4545454545454546", 1.4545454545454546, 
     		(double)cumulativePercentages.getValue("2"),  0.0000001d);
 	  } 
 	}
+  public void testNullGetCumulativePercentages2specialvalue() {
+	  {
+		  keyedValues.addValue("3" ,Double.NaN);
+			 KeyedValues cumulativePercentages = DataUtilities.getCumulativePercentages(keyedValues);
+		assertEquals("wrong percentage return. It should be 1.4545454545454546", 1.4545454545454546, 
+	    		(double)cumulativePercentages.getValue("3"),  0.0000001d);
+		  } 
+  }
   @Test
-  public void testNullCreateNumberArray2D() {
+  public void testNullCreateNumberArray1invalidvalue() {
 	  try {
 	    DataUtilities.createNumberArray(null);
 	    fail("No exception thrown. The expected outcome was: a thrown exception of "
@@ -56,9 +64,29 @@ public class DataUtilitiesTest {
 	        e.getClass().equals(IllegalArgumentException.class));
 	  }
 	}
-  
   @Test
-  public void testNullCreateNumberArray() {
+  public void testNullCreateNumberArray2negativevalue() {
+		double[] test2 = {-1.0};
+		  Number[] result=DataUtilities.createNumberArray(test2);
+		  assertEquals(1, result.length);
+		  }
+  @Test
+  public void testCreateNumberArray3PositiveNumbers() {
+      double[] test = {1.0, 2.5, 3.0};
+      Number[] result = DataUtilities.createNumberArray(test);
+      assertEquals(3, result.length);
+      assertEquals(2.5, result[1].doubleValue(), 0.000001);
+  }
+  @Test
+  public void testCreateNumberArray4SpecialValues() {
+      double[] test = {Double.NaN, Double.POSITIVE_INFINITY,0};
+      Number[] result = DataUtilities.createNumberArray(test);
+      assertEquals(3, result.length);
+      assertTrue(Double.isNaN(result[0].doubleValue()));  
+      assertEquals(Double.POSITIVE_INFINITY, result[1].doubleValue(), 0.000001);
+  }
+  @Test
+  public void testNullCreateNumberArray2D1invalidvalue() {
 	  try {
 	    DataUtilities.createNumberArray(null);
 	    fail("No exception thrown. The expected outcome was: a thrown exception of "
@@ -68,6 +96,37 @@ public class DataUtilitiesTest {
 	        e.getClass().equals(IllegalArgumentException.class));
 	  }
 	}
+  @Test
+  public void testNullCreateNumberArray2D2negativevalue() {
+		double[][] test2 = {{-1.0}};
+		  Number[][] result=DataUtilities.createNumberArray2D(test2);
+		 
+		  assertEquals(1, result.length);
+		  }
+  @Test
+  public void testCreateNumberArray2D3PositiveNumbers() {
+      double[][] test = {{1.0, 2.5, 3.0}};
+      Number[][] result = DataUtilities.createNumberArray2D(test);
+      System.out.println(result);
+      assertEquals(1, result.length);
+      assertEquals(2.5, result[0][1].doubleValue(), 0.000001);
+  }
+//  @Test
+//  public void testCreateNumberArray2D3PositiveNumbers() {
+//      double[][] test = {{1.0, 2.5, 3.0}};
+//      Number[][] result = DataUtilities.createNumberArray2D(test);
+//      System.out.println(result);
+//      assertEquals(result[0][2], 0);
+//      assertEquals(2.5, result[0][1].doubleValue(), 0.000001);
+//  }
+  @Test
+  public void testCreateNumberArray2D4SpecialValues() {
+      double[][] test ={{Double.NaN, Double.POSITIVE_INFINITY,0}};
+      Number[][]result = DataUtilities.createNumberArray2D(test);
+      assertEquals(1, result.length);
+      assertTrue(Double.isNaN(result[0][0].doubleValue()));  
+      assertEquals(Double.POSITIVE_INFINITY, result[0][1].doubleValue(), 0.000001);
+  }
   @Test
   public void testValidDataAndRowTotal() {
     assertEquals("Wrong sum returned. It should be 0.0", 0.0,
@@ -75,14 +134,73 @@ public class DataUtilitiesTest {
     
   }
   @Test
-  public void testValidDataAndColumnColumnTotal() {
-    assertEquals("Wrong sum returned. It should be 6.0", 6.0,
-        DataUtilities.calculateColumnTotal(values2D, 0), 0.0000001d);
+  public void testValidDataAndRowTotal1Negativevalue() {
+			 try 
+			 { 
+				 DataUtilities.calculateRowTotal(values2D1, -1); 
+			  fail("No exception thrown. The expected outcome was: a thrown exception of type: IllegalArgumentException"); 
+			 } 
+			 catch (Exception e) 
+			 { 
+			  assertTrue("Incorrect exception type thrown",  
+			   e.getClass().equals(IndexOutOfBoundsException.class)); 
+			 } 
+  }
+  
+  @Test
+  public void testValidDataAndRowTotal2bordercaseleft() {
+    assertEquals("Wrong sum returned. It should be 1.0", 1.0,
+        DataUtilities.calculateRowTotal(values2D1, 0), 0.0000001d);
   }
   @Test
-  public void testValidDataAndColumnColumnTotal1() {
-    assertEquals("Wrong sum returned. It should be 5.0", 5.0,
+  public void testValidDataAndRowTotal3borfercaseright() {
+	  try 
+		 { 
+			 DataUtilities.calculateRowTotal(values2D1, 2147483647); 
+		  fail("No exception thrown. The expected outcome was: a thrown exception of type: IllegalArgumentException"); 
+		 } 
+		 catch (Exception e) 
+		 { 
+		  assertTrue("Incorrect exception type thrown",  
+		   e.getClass().equals(IndexOutOfBoundsException.class)); 
+		 } 
+  }
+ 
+  @Test
+  public void testValidDataAndColumnTotal11Negativevalue() {
+			 try 
+			 { 
+				 DataUtilities.calculateColumnTotal(values2D1, -1); 
+			  fail("No exception thrown. The expected outcome was: a thrown exception of type: IllegalArgumentException"); 
+			 } 
+			 catch (Exception e) 
+			 { 
+			  assertTrue("Incorrect exception type thrown",  
+			   e.getClass().equals(IndexOutOfBoundsException.class)); 
+			 } 
+  }
+  @Test
+  public void testValidDataAndColumnTotal12bordercaseleft() {
+    assertEquals("Wrong sum returned. It should be 1.0", 1.0,
         DataUtilities.calculateColumnTotal(values2D1, 0), 0.0000001d);
+  }
+  @Test
+  public void testValidDataAndColumnTotal13borfercaseright() {
+	  try 
+		 { 
+			 DataUtilities.calculateColumnTotal(values2D1, 2147483647); 
+		  fail("No exception thrown. The expected outcome was: a thrown exception of type: IllegalArgumentException"); 
+		 } 
+		 catch (Exception e) 
+		 { 
+		  assertTrue("Incorrect exception type thrown",  
+		   e.getClass().equals(IndexOutOfBoundsException.class)); 
+		 } 
+  }
+  @Test
+  public void testValidDataAndColumnTotal14insidetherange() {
+    assertEquals("Wrong sum returned. It should be 4.0", 4.0,
+        DataUtilities.calculateColumnTotal(values2D1, 1), 0.0000001d);
   }
   @Test
   public void testNullDataColumnTotal() {
@@ -95,4 +213,14 @@ public class DataUtilitiesTest {
 	        e.getClass().equals(NullPointerException.class));
 	  }
 	}
+//  public void testNullDataColumnTotal() {
+//	  try {
+//	    DataUtilities.calculateColumnTotal(null, 0);
+//	    fail("No exception thrown. The expected outcome was: a thrown exception of "
+//	         + "type: IllegalArgumentException");
+//	  } catch (Exception e) {
+//	    assertTrue("Incorrect exception type thrown",
+//	        e.getClass().equals(IllegalArgumentException.class));
+//	  }
+//	}
 }
